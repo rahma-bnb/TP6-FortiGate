@@ -1,0 +1,8 @@
+rules:
+  - name: allow-web-to-srv01
+    srcintf: port2
+    dstintf: port1
+    srcaddr: LAN
+    dstaddr: SRV-WEB-01
+    service: HTTPS
+    action: accept
