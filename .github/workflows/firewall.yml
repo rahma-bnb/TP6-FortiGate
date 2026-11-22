@@ -1,29 +1,32 @@
-name: Firewall-as-Code
+import os
+import yaml
+import requests
 
-on:
-  pull_request:
-    paths:
-      - 'firewall/**'
+FORTIGATE_IP = "192.168.116.128"
 
-  push:
-    branches:
-      - main
-    paths:
-      - 'firewall/**'
+TOKEN = os.environ["FORTIGATE_TOKEN"]
 
-jobs:
+headers = {
+    "Authorization": f"Bearer {TOKEN}"
+}
 
-  lint-and-test:
+with open("firewall/rules.yaml") as f:
+    rules = yaml.safe_load(f)["rules"]
 
-    runs-on: self-hosted
+url = f"https://{FORTIGATE_IP}/api/v2/cmdb/firewall/address"
 
-    steps:
+resp = requests.get(
+    url,
+    headers=headers,
+    verify=False
+)
 
-      - uses: actions/checkout@v4
+print("FortiGate API status:", resp.status_code)
 
-      - name: Install dependencies
-        run: pip install pyyaml requests
-
+if resp.status_code == 200:
+    print("Deploy simulation OK")
+else:
+    raise Exception("FortiGate connection failed")
       - name: Lint
         run: python scripts/lint_rules.py
 
