@@ -1,0 +1,29 @@
+import os
+import yaml
+import requests
+
+FORTIGATE_IP = "192.168.116.128"
+
+TOKEN = os.environ["FORTIGATE_TOKEN"]
+
+headers = {
+    "Authorization": f"Bearer {TOKEN}"
+}
+
+with open("firewall/rules.yaml") as f:
+    rules = yaml.safe_load(f)["rules"]
+
+url = f"https://{FORTIGATE_IP}/api/v2/cmdb/firewall/address"
+
+resp = requests.get(
+    url,
+    headers=headers,
+    verify=False
+)
+
+print("FortiGate API status:", resp.status_code)
+
+if resp.status_code == 200:
+    print("Deploy simulation OK")
+else:
+    raise Exception("FortiGate connection failed")
