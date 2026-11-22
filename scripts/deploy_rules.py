@@ -1,5 +1,4 @@
 import os
-import yaml
 import requests
 
 FORTIGATE_IP = "192.168.116.128"
@@ -10,15 +9,13 @@ headers = {
     "Authorization": f"Bearer {TOKEN}"
 }
 
-with open("firewall/rules.yaml") as f:
-    rules = yaml.safe_load(f)["rules"]
-
 url = f"https://{FORTIGATE_IP}/api/v2/cmdb/firewall/address"
 
 resp = requests.get(
     url,
     headers=headers,
-    verify=False
+    verify=False,
+    timeout=20
 )
 
 print("FortiGate API status:", resp.status_code)
